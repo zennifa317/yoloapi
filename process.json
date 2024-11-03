@@ -1,0 +1,20 @@
+{
+    "process": "flip",
+    "width": 640,
+    "height": 360,
+    "rotate": {
+        "center": "center",
+        "scale": 1,
+        "angle": 30,
+        "help": "canter:回転の中心座標, scale:拡大、縮小倍率, angle:回転角度(度で指定)"
+    },
+    "flip": {
+        "flipcode": -1,
+        "help": "反転方向の指定 0:上下反転, 1:左右反転, -1:上下左右反転"
+    },
+    "shear": {
+        "shear_factor": 0.4,
+        "shear_point": 0,
+        "help": "shaer_factor:せん断係数, shear_point:せん断起点 0:下辺, 1:右辺, 2:上辺, 3:左辺"
+    }
+}
