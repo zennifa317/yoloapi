@@ -63,7 +63,7 @@ class Yolo:
         if diff != set():
             raise IndexError(f'画像データとアノテーションデータの数が一致していません\nimg_id:{diff}')
     
-    def load_json(self, *json_paths):
+    def load_json(self, json_paths):
         self.imgs, self.anns = dict(), dict()
         print('loading json file...')
         for json_path in json_paths:
@@ -86,11 +86,15 @@ class Yolo:
         with open(json_path, mode='w') as f:
             json.dump(info, f, indent=1)
 
-    def get_imgid(self):
+    def get_imid(self):
         return list(self.imgs)
     
-    def get_impath(self, img_id):
-        return self.imgs[img_id]['path']
+    def get_impath(self, img_ids):
+        im_path = []
+        for img_id in img_ids:
+            im_path.append(self.imgs[img_id]['path'])
+        im_path.sort()
+        return im_path
     
     def get_shape(self, img_id):
         width = self.imgs[img_id]['width']
