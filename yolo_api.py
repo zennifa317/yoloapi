@@ -89,7 +89,10 @@ class Yolo:
     def get_imid(self):
         return list(self.imgs)
     
-    def get_impath(self, img_ids):
+    def get_impath(self, img_id):
+        return self.imgs[img_id]['path']
+    
+    def get_impaths(self, img_ids):
         im_path = []
         for img_id in img_ids:
             im_path.append(self.imgs[img_id]['path'])
@@ -184,19 +187,24 @@ class Yolo:
             bbox = ann['bbox']
             cat_id = ann['cat_id']
             transed_ann = {}
-            de_bbox = denormalize(bbox, width, height)
-            corner = xywh2xyX4(de_bbox)
+            if bbox != []:
+                de_bbox = denormalize(bbox, width, height)
+                corner = xywh2xyX4(de_bbox)
 
-            np_corner = np.array(corner)
-            np_corner = np.append(np_corner, np.ones((4, 1)), axis=1)
-            np_transed_corner = np.dot(np_trans, np_corner.T)
-            transed_corner = np_transed_corner.T.tolist()
+                np_corner = np.array(corner)
+                np_corner = np.append(np_corner, np.ones((4, 1)), axis=1)
+                np_transed_corner = np.dot(np_trans, np_corner.T)
+                transed_corner = np_transed_corner.T.tolist()
 
-            adj_corner = adjust_corner(transed_corner, width, height)
-            transed_bbox = xyX42xywh(adj_corner)
-            nor_bbox = normalize(transed_bbox, width, height)
-            transed_ann['cat_id'] = cat_id
-            transed_ann['bbox'] = nor_bbox
+                adj_corner = adjust_corner(transed_corner, width, height)
+                transed_bbox = xyX42xywh(adj_corner)
+                nor_bbox = normalize(transed_bbox, width, height)
+                transed_ann['cat_id'] = cat_id
+                transed_ann['bbox'] = nor_bbox
+            else:
+                transed_ann['cat_id'] = cat_id
+                transed_ann['bbox'] = bbox
+
             transed_anns.append(transed_ann)
 
         return transed_anns

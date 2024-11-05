@@ -12,6 +12,8 @@ if __name__ == '__main__':
     with open('./dataset.json') as f:
         dataset = json.load(f)
 
+    os.makedirs(dataset['output'], exist_ok=True)
+
     yolo = Yolo()
     yolo.load_json(dataset['json_paths'])
     img_id = yolo.get_imid()
@@ -19,20 +21,22 @@ if __name__ == '__main__':
     train_rate = dataset['train']['train_rate']
     valid_rate = dataset['valid']['valid_rate']
     test_rate = dataset['test']['test_rate']
-    if train_rate + valid_rate + test_rate != 1:
+
+    if int(train_rate*100) + int(valid_rate*100) + int(test_rate*100) != 100:
         raise ValueError('それぞれの割合の合計が1になっていません')
+    
     train_imids, validtest_imids = train_test_split(img_id, train_size=train_rate, random_state=0)
     valid_imids, test_imids = train_test_split(validtest_imids, train_size=valid_rate/(valid_rate+test_rate), random_state=0)
 
-    train_paths = yolo.get_impath(train_imids)
-    valid_paths = yolo.get_impath(valid_imids)
-    test_paths = yolo.get_impath(test_imids)
+    train_paths = yolo.get_impaths(train_imids)
+    valid_paths = yolo.get_impaths(valid_imids)
+    test_paths = yolo.get_impaths(test_imids)
 
-    with open(dataset['train']['train_txt'], mode='w') as g:
+    with open(os.path.join(dataset['output'], dataset['train']['train_txt_name']), mode='w') as g:
         g.write('\n'.join(train_paths))
-    with open(dataset['valid']['valid_txt'], mode='w') as h:
+    with open(os.path.join(dataset['output'], dataset['valid']['valid_txt_name']), mode='w') as h:
         h.write('\n'.join(valid_paths))
-    with open(dataset['test']['test_txt'], mode='w') as i:
+    with open(os.path.join(dataset['output'], dataset['test']['test_txt_name']), mode='w') as i:
         i.write('\n'.join(test_paths))
     
     if dataset['Data_Aug']['bool'] == 'True':
@@ -40,7 +44,7 @@ if __name__ == '__main__':
 
         img_path = os.path.join(data_aug['output'], 'images')
         txt_path = os.path.join(data_aug['output'], 'labels')
-        os.makedirs(data_aug['output'], exist_ok=True)
+
         if not os.path.exists(img_path):
             os.mkdir(img_path)
         if not os.path.exists(txt_path):
@@ -49,7 +53,7 @@ if __name__ == '__main__':
         for i in range(len(data_aug['processes'])):
             if data_aug['processes'][i]['rate'] == 1:
                 aug = train_imids
-            elif data_aug['processes'][i]['rate'] < 1:
+            elif data_aug['processes'][i]['rate'] < 1.0:
                 aug, rest = train_test_split(train_imids, train_size=data_aug['processes'][i]['rate'], random_state=0)
             else:
                 raise ValueError('割合が1を超えています')
@@ -68,9 +72,11 @@ if __name__ == '__main__':
                 with open(os.path.join(txt_path, txt_name), mode='w') as j:
                     anns = []
                     for ann_info in transed_anns_info:
+                        if ann_info['cat_id'] == []:
+                            break
                         ann = str(ann_info['cat_id']) + ' ' + ' '.join(map(str, ann_info['bbox']))
                         anns.append(ann)
-                        j.write('\n'.join(anns))
+                    j.write('\n'.join(anns))
 
             aug, rest = [], []
 
@@ -79,9 +85,11 @@ if __name__ == '__main__':
 
         yolo_aug = Yolo()
         yolo_aug.load_imgs_annos(images_file=img_file, annotations_file=txt_file)
-        yolo_aug.create_json(json_path=os.path.join(data_aug['output'], 'data_aug.json'))
-        aug_paths = yolo.get_impath(yolo_aug.get_imid())
-        with open(dataset['train']['train_txt'], mode='a') as k:
+        yolo_aug.create_json(json_path=os.path.join(dataset['output'], 'data_aug.json'))
+        aug_paths = yolo_aug.get_impaths(yolo_aug.get_imid())
+
+        with open(os.path.join(dataset['output'], dataset['train']['train_txt_name']), mode='a') as k:
+            k.write('\n')
             k.write('\n'.join(aug_paths))
     
     elif dataset['Data_Aug']['bool'] == 'False':

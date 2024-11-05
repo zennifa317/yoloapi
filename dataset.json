@@ -1,22 +1,22 @@
 {
     "json_paths": [
-
+        "abc"
     ],
+    "output": "abc",
     "train": {
         "train_rate": 0.7,
-        "train_txt": "abc"
+        "train_txt_name": "abc"
     },
     "valid": {
         "valid_rate": 0.2,
-        "valid_txt": "abc"
+        "valid_txt_name": "abc"
     },
     "test": {
         "test_rate": 0.1,
-        "test_txt": "abc"
+        "test_txt_name": "abc"
     },
     "Data_Aug": {
         "bool": "True",
-        "output": "abc",
         "processes":[
             {
                 "process": "rotate",
