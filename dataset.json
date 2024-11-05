@@ -5,15 +5,15 @@
     "output": "abc",
     "train": {
         "train_rate": 0.7,
-        "train_txt_name": "abc"
+        "train_txt_name": "train_txt"
     },
     "valid": {
         "valid_rate": 0.2,
-        "valid_txt_name": "abc"
+        "valid_txt_name": "valid_txt"
     },
     "test": {
         "test_rate": 0.1,
-        "test_txt_name": "abc"
+        "test_txt_name": "test_txt"
     },
     "Data_Aug": {
         "bool": "True",
