@@ -17,6 +17,9 @@ if __name__ == '__main__':
     img_file = arg.img_file
     txt_file = arg.txt_file
     output = arg.json_path
+
+    img_path = []
+    txt_path = []
     img_path = glob.glob(os.path.join(img_file, '*.jpg'))
     txt_path = glob.glob(os.path.join(txt_file, '*.txt'))
 
